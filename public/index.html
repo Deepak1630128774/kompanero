@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👜 Kompanero Tracking Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="preload">
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <img src="https://kompanero.in/cdn/shop/files/Kompanero_Logo_nofgh_9577cbe3-e2de-460c-afc0-216ac43635e2.png?v=1693299674&width=360" 
+                 alt="Kompanero Logo" 
+                 class="logo">
+            <h1 class="title">Kompanero Tracking Dashboard</h1>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Filters Section -->
+            <section class="filters-section">
+                <h2>Filter Orders</h2>
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label for="fromDate">From Date</label>
+                        <input type="date" id="fromDate" class="input-field">
+                    </div>
+                    <div class="filter-group">
+                        <label for="toDate">To Date</label>
+                        <input type="date" id="toDate" class="input-field">
+                    </div>
+                    <div class="filter-group">
+                        <label for="carrier">Carrier</label>
+                        <select id="carrier" class="input-field">
+                            <option value="all">All Carriers</option>
+                            <option value="dtdc">DTDC</option>
+                            <option value="bluedart">Bluedart</option>
+                            <option value="delhivery">Delhivery</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <button id="processBtn" class="btn-primary">Process Orders</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Loading Animation -->
+            <div id="loadingAnimation" class="loading-animation hidden">
+                <section class="bag-animation">
+                    <div class="satchel-container">
+                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/196308/shadow.png" alt="shadow">
+
+                        <!--Satchel Body-->
+                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/196308/black-body.png" class="satchel-static satchel-body" alt="satchel body">
+                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/196308/marble-body.png" class="satchel-1 satchel-body" alt="satchel body">
+                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/196308/celedon-body.png" class="satchel-2 satchel-body" alt="satchel body">
+                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/196308/blue-body-plain.png" class="satchel-body satchel-3" alt="satchel body">
+                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/196308/cream-body-plain.png" class="satchel-4 satchel-body" alt="satchel body">
+                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/196308/black-body.png" class="satchel-5 satchel-body" alt="satchel body">
+
+                        <!--Satchel Collar-->
+                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/196308/blue-body-collar.png" class="satchel-3 satchel-collar" alt="satchel collar">
+                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/196308/cream-collar.png" class="satchel-4 satchel-collar" alt="satchel collar">
+
+                        <!--Satchel Gusset-->
+                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/196308/black-gusset.png" class="satchel-static satchel-gusset" alt="satchel gusset">
+                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/196308/marble-gusset.png" class="satchel-1 satchel-gusset" alt="satchel gusset">
+                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/196308/celedon-gusset.png" class="satchel-2 satchel-gusset" alt="satchel gusset">
+                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/196308/blue-gusset.png" class="satchel-3 satchel-gusset" alt="satchel gusset">
+                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/196308/cream-gusset.png" class="satchel-4 satchel-gusset" alt="satchel gusset">
+                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/196308/black-gusset.png" class="satchel-5 satchel-gusset" alt="satchel gusset">
+
+                        <!--Satchel Piping-->
+                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/196308/black-piping.png" class="satchel-static satchel-piping" alt="satchel piping">
+                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/196308/marble-piping.png" class="satchel-1 satchel-piping" alt="satchel piping">
+                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/196308/celedon-piping.png" class="satchel-2 satchel-piping" alt="satchel piping">
+                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/196308/blue-piping.png" class="satchel-3 satchel-piping" alt="satchel piping">
+                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/196308/cream-piping.png" class="satchel-4 satchel-piping" alt="satchel piping">
+                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/196308/black-piping.png" class="satchel-5 satchel-piping" alt="satchel piping">
+
+                        <!--Satchel Strap-->
+                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/196308/black-strap.png" class="satchel-static satchel-strap" alt="satchel strap">
+                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/196308/marble-strap.png" class="satchel-1 satchel-strap" alt="satchel strap">
+                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/196308/celedon-strap.png" class="satchel-2 satchel-strap" alt="satchel strap">
+                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/196308/blue-strap.png" class="satchel-3 satchel-strap" alt="satchel strap">
+                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/196308/cream-strap.png" class="satchel-4 satchel-strap" alt="satchel strap">
+                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/196308/black-strap.png" class="satchel-5 satchel-strap" alt="satchel strap">
+
+                        <!--Satchel Narrow-->
+                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/196308/black-hardware.png" class="satchel-static satchel-narrow" alt="satchel hardware">
+                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/196308/marble-hardware.png" class="satchel-1 satchel-narrow" alt="satchel hardware">
+                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/196308/celedon-hardware.png" class="satchel-2 satchel-narrow" alt="satchel hardware">
+                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/196308/blue-hardware.png" class="satchel-3 satchel-narrow" alt="satchel hardware">
+                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/196308/cream-hardware.png" class="satchel-4 satchel-narrow" alt="satchel hardware">
+                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/196308/black-hardware.png" class="satchel-5 satchel-narrow" alt="satchel hardware">
+                    </div>
+                </section>
+                <p class="loading-text">Crafting your tracking report...</p>
+            </div>
+
+            <!-- Results Section -->
+            <section id="resultsSection" class="results-section hidden">
+                <div class="results-header">
+                    <h2>Tracking Results</h2>
+                    <button id="downloadCsvBtn" class="btn-secondary">📥 Download CSV</button>
+                </div>
+                <div class="table-container">
+                    <table id="resultsTable" class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Order Date</th>
+                                <th>Customer Name</th>
+                                <th>Ordered Items</th>
+                                <th>Carrier</th>
+                                <th>Tracking Number</th>
+                                <th>Tracking URL</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsBody">
+                        </tbody>
+                    </table>
+                </div>
+                <div id="noResults" class="no-results hidden">
+                    <p>No orders found for the selected filters.</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2025 Kompanero. Crafted with care.</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
