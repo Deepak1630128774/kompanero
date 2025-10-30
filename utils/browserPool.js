@@ -1,4 +1,4 @@
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer').default;
 
 class BrowserPool {
   constructor(maxConcurrent = 5) {
@@ -20,7 +20,8 @@ class BrowserPool {
 
     try {
       browser = await puppeteer.launch({
-        headless: 'new',
+        headless: true,
+        executablePath: puppeteer.executablePath(),
         args: [
           '--no-sandbox',
           '--disable-setuid-sandbox',
