@@ -1,18 +1,22 @@
 const { browserPool } = require('../utils/browserPool');
 
 const MAX_RETRIES = 2;
-const TIMEOUT = 15000;
+const TIMEOUT = 20000; // Balanced timeout for production
+const PAGE_WAIT = 2000; // Wait time after page load
 
 async function getStatus(page, trackingNumber, retryCount = 0) {
   try {
     const url = `https://www.delhivery.com/track-v2/package/${trackingNumber}`;
+    
+    // Set user agent to avoid bot detection
+    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
     
     await page.goto(url, {
       waitUntil: 'networkidle2',
       timeout: TIMEOUT
     });
     
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    await new Promise(resolve => setTimeout(resolve, PAGE_WAIT));
     
     const result = await page.evaluate(() => {
       const allText = document.body.innerText;
@@ -55,8 +59,10 @@ async function getStatus(page, trackingNumber, retryCount = 0) {
     };
     
   } catch (error) {
+    console.error(`[Delhivery] Error tracking ${trackingNumber} (attempt ${retryCount + 1}/${MAX_RETRIES + 1}):`, error.message);
+    
     if (retryCount < MAX_RETRIES) {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 2000));
       return getStatus(page, trackingNumber, retryCount + 1);
     }
     
