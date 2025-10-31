@@ -15,7 +15,7 @@ async function trackDTDC(consignmentNo, retryCount = 0) {
     const url = `https://txk.dtdc.com/ctbs-tracking/customerInterface.tr?submitName=showCITrackingDetails&cType=Consignment&cnNo=${consignmentNo}`;
     
     // Launch browser with production-friendly settings
-    const launchOptions = {
+    browser = await puppeteer.launch({
       headless: 'new',
       args: [
         '--no-sandbox',
@@ -26,14 +26,7 @@ async function trackDTDC(consignmentNo, retryCount = 0) {
         '--window-size=1920x1080'
       ],
       timeout: REQUEST_TIMEOUT
-    };
-
-    // Use system Chrome if PUPPETEER_EXECUTABLE_PATH is set
-    if (process.env.PUPPETEER_EXECUTABLE_PATH) {
-      launchOptions.executablePath = process.env.PUPPETEER_EXECUTABLE_PATH;
-    }
-
-    browser = await puppeteer.launch(launchOptions);
+    });
 
     const page = await browser.newPage();
     
