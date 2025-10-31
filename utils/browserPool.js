@@ -19,7 +19,7 @@ class BrowserPool {
     let browser;
 
     try {
-      const launchOptions = {
+      browser = await puppeteer.launch({
         headless: 'new',
         args: [
           '--no-sandbox',
@@ -28,14 +28,7 @@ class BrowserPool {
           '--disable-accelerated-2d-canvas',
           '--disable-gpu'
         ]
-      };
-
-      // Use system Chrome if PUPPETEER_EXECUTABLE_PATH is set
-      if (process.env.PUPPETEER_EXECUTABLE_PATH) {
-        launchOptions.executablePath = process.env.PUPPETEER_EXECUTABLE_PATH;
-      }
-
-      browser = await puppeteer.launch(launchOptions);
+      });
 
       const page = await browser.newPage();
       const result = await task(page);
