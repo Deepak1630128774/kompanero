@@ -2,10 +2,12 @@ services:
   - type: web
     name: kompanero-tracking
     env: node
-    buildCommand: |
-      npm install
-      npx puppeteer browsers install chrome
+    buildCommand: chmod +x render-build.sh && ./render-build.sh
     startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
+      - key: PUPPETEER_SKIP_CHROMIUM_DOWNLOAD
+        value: false
+      - key: PUPPETEER_CACHE_DIR
+        value: /opt/render/.cache/puppeteer
