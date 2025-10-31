@@ -2,7 +2,8 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 
 const MAX_RETRIES = 2;
-const RETRY_DELAY = 1000; // 1 second
+const RETRY_DELAY = 2000; // 2 seconds
+const REQUEST_TIMEOUT = 30000; // 30 seconds for slow production servers
 
 async function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -19,7 +20,7 @@ async function trackDTDC(consignmentNo, retryCount = 0) {
         'Accept-Language': 'en-US,en;q=0.5',
         'Connection': 'keep-alive'
       },
-      timeout: 20000
+      timeout: REQUEST_TIMEOUT
     });
 
     const $ = cheerio.load(data);
@@ -89,8 +90,11 @@ async function trackDTDC(consignmentNo, retryCount = 0) {
     }
 
   } catch (error) {
+    console.error(`[DTDC] Error tracking ${consignmentNo} (attempt ${retryCount + 1}/${MAX_RETRIES + 1}):`, error.message);
+    
     // Retry on error if we haven't exceeded max retries
-    if (retryCount < MAX_RETRIES && (error.code === 'ECONNRESET' || error.code === 'ETIMEDOUT')) {
+    if (retryCount < MAX_RETRIES && (error.code === 'ECONNRESET' || error.code === 'ETIMEDOUT' || error.code === 'ECONNABORTED')) {
+      console.log(`[DTDC] Retrying ${consignmentNo} in ${RETRY_DELAY * (retryCount + 1)}ms...`);
       await sleep(RETRY_DELAY * (retryCount + 1));
       return trackDTDC(consignmentNo, retryCount + 1);
     }
