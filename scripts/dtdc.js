@@ -23,18 +23,6 @@ async function trackDTDC(consignmentNo, retryCount = 0) {
         '--disable-dev-shm-usage',
         '--disable-accelerated-2d-canvas',
         '--disable-gpu',
-        '--disable-software-rasterizer',
-        '--disable-extensions',
-        '--disable-background-networking',
-        '--disable-default-apps',
-        '--disable-sync',
-        '--metrics-recording-only',
-        '--mute-audio',
-        '--no-first-run',
-        '--safebrowsing-disable-auto-update',
-        '--disable-features=TranslateUI',
-        '--disable-ipc-flooding-protection',
-        '--single-process',
         '--window-size=1920x1080'
       ],
       timeout: REQUEST_TIMEOUT
