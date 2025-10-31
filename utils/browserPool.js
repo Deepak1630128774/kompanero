@@ -52,6 +52,7 @@ class BrowserPool {
 }
 
 // Create a singleton instance
-const browserPool = new BrowserPool(5);
+// Reduced concurrency for production to prevent memory issues
+const browserPool = new BrowserPool(process.env.NODE_ENV === 'production' ? 2 : 5);
 
 module.exports = { browserPool };

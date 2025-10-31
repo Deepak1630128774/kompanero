@@ -133,7 +133,7 @@ app.post('/api/process-orders', async (req, res) => {
     console.log(`[${requestId}] ✓ Total orders fetched: ${orders.length}`);
 
     // Process orders with concurrency limit to prevent memory issues
-    const CONCURRENT_LIMIT = 50; // Process 50 orders at a time
+    const CONCURRENT_LIMIT = 30; // Process 50 orders at a time
     const results = [];
     
     for (let i = 0; i < orders.length; i += CONCURRENT_LIMIT) {
