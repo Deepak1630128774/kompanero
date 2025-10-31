@@ -1,22 +1,18 @@
 const { browserPool } = require('../utils/browserPool');
 
-const TIMEOUT = 30000; // Increased for production
+const TIMEOUT = 20000;
 const MAX_RETRIES = 2;
-const PAGE_WAIT = 3000; // Reduced from 8s to 3s
 
 async function getTrackingInfo(page, trackingNumber, retryCount = 0) {
   try {
     const url = `https://trackcourier.io/track-and-trace/blue-dart-courier/${trackingNumber}`;
-    
-    // Set user agent to avoid bot detection
-    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
     
     await page.goto(url, {
       waitUntil: 'networkidle2',
       timeout: TIMEOUT
     });
     
-    await new Promise(resolve => setTimeout(resolve, PAGE_WAIT));
+    await new Promise(resolve => setTimeout(resolve, 8000));
     
     const result = await page.evaluate(() => {
       const allText = document.body.innerText;
@@ -45,8 +41,6 @@ async function getTrackingInfo(page, trackingNumber, retryCount = 0) {
     };
     
   } catch (error) {
-    console.error(`[BlueDart] Error tracking ${trackingNumber} (attempt ${retryCount + 1}/${MAX_RETRIES + 1}):`, error.message);
-    
     if (retryCount < MAX_RETRIES) {
       await new Promise(resolve => setTimeout(resolve, 2000));
       return getTrackingInfo(page, trackingNumber, retryCount + 1);

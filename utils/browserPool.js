@@ -1,4 +1,4 @@
-const puppeteer = require('puppeteer').default;
+const puppeteer = require('puppeteer');
 
 class BrowserPool {
   constructor(maxConcurrent = 5) {
@@ -19,9 +19,8 @@ class BrowserPool {
     let browser;
 
     try {
-      browser = await puppeteer.launch({
-        headless: true,
-        executablePath: puppeteer.executablePath(),
+      const launchOptions = {
+        headless: 'new',
         args: [
           '--no-sandbox',
           '--disable-setuid-sandbox',
@@ -29,7 +28,14 @@ class BrowserPool {
           '--disable-accelerated-2d-canvas',
           '--disable-gpu'
         ]
-      });
+      };
+
+      // Use system Chrome if PUPPETEER_EXECUTABLE_PATH is set
+      if (process.env.PUPPETEER_EXECUTABLE_PATH) {
+        launchOptions.executablePath = process.env.PUPPETEER_EXECUTABLE_PATH;
+      }
+
+      browser = await puppeteer.launch(launchOptions);
 
       const page = await browser.newPage();
       const result = await task(page);
@@ -52,7 +58,6 @@ class BrowserPool {
 }
 
 // Create a singleton instance
-// Reduced concurrency for production to prevent memory issues
-const browserPool = new BrowserPool(process.env.NODE_ENV === 'production' ? 2 : 5);
+const browserPool = new BrowserPool(5);
 
 module.exports = { browserPool };
