@@ -1,7 +1,8 @@
 const puppeteer = require('puppeteer');
 
 class BrowserPool {
-  constructor(maxConcurrent = 5) {
+  constructor(maxConcurrent = 2) {
+    // Reduced from 5 to 2 for memory-constrained environments
     this.maxConcurrent = maxConcurrent;
     this.activeBrowsers = 0;
     this.queue = [];
@@ -26,7 +27,19 @@ class BrowserPool {
           '--disable-setuid-sandbox',
           '--disable-dev-shm-usage',
           '--disable-accelerated-2d-canvas',
-          '--disable-gpu'
+          '--disable-gpu',
+          '--disable-software-rasterizer',
+          '--disable-extensions',
+          '--disable-background-networking',
+          '--disable-default-apps',
+          '--disable-sync',
+          '--metrics-recording-only',
+          '--mute-audio',
+          '--no-first-run',
+          '--safebrowsing-disable-auto-update',
+          '--disable-features=TranslateUI',
+          '--disable-ipc-flooding-protection',
+          '--single-process' // Critical for low memory
         ]
       });
 
@@ -50,7 +63,7 @@ class BrowserPool {
   }
 }
 
-// Create a singleton instance
-const browserPool = new BrowserPool(5);
+// Create a singleton instance (2 concurrent for memory efficiency)
+const browserPool = new BrowserPool(2);
 
 module.exports = { browserPool };
