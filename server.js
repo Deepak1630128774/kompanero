@@ -11,11 +11,6 @@ const { convertToCSV } = require('./utils/csvExport');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Health check endpoint (must be before other middleware)
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
-});
-
 // Middleware
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -138,7 +133,7 @@ app.post('/api/process-orders', async (req, res) => {
     console.log(`[${requestId}] ✓ Total orders fetched: ${orders.length}`);
 
     // Process orders with concurrency limit to prevent memory issues
-    const CONCURRENT_LIMIT = 5; // Reduced for memory-constrained environments
+    const CONCURRENT_LIMIT = 30; // Process 50 orders at a time
     const results = [];
     
     for (let i = 0; i < orders.length; i += CONCURRENT_LIMIT) {
@@ -230,41 +225,12 @@ app.post('/api/export-csv', (req, res) => {
   }
 });
 
-// Verify Puppeteer setup at startup
-async function verifyPuppeteerSetup() {
-  try {
-    const puppeteer = require('puppeteer');
-    console.log('🔍 Verifying Puppeteer installation...');
-    
-    const browser = await puppeteer.launch({
-      headless: 'new',
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
-    
-    await browser.close();
-    console.log('✅ Puppeteer and Chrome verified successfully!');
-    return true;
-  } catch (error) {
-    console.error('❌ Puppeteer verification failed:', error.message);
-    console.error('⚠️  Tracking features may not work properly');
-    return false;
-  }
-}
-
 // Start server
-app.listen(PORT, async () => {
+app.listen(PORT, () => {
   console.log(`\n${'='.repeat(60)}`);
   console.log(`👜 Kompanero Tracking Dashboard`);
   console.log(`${'='.repeat(60)}`);
   console.log(`🚀 Server running on http://localhost:${PORT}`);
-  
-  // Verify Puppeteer in background (don't block startup)
-  verifyPuppeteerSetup().then(success => {
-    if (success) {
-      console.log(`📊 Ready to track orders!`);
-    } else {
-      console.log(`⚠️  Server running but tracking may be limited`);
-    }
-    console.log(`${'='.repeat(60)}\n`);
-  });
+  console.log(`📊 Ready to track orders!`);
+  console.log(`${'='.repeat(60)}\n`);
 });

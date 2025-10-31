@@ -28,6 +28,14 @@ Thumbs.db
 # Build files
 dist/
 build/
+out/
+
+# Electron
+*.exe
+*.dmg
+*.AppImage
+*.deb
+*.rpm
 
 # Temporary files
 *.tmp
