@@ -1,6 +1,6 @@
 const { browserPool } = require('../utils/browserPool');
 
-const TIMEOUT = 20000;
+const TIMEOUT = 30000;
 const MAX_RETRIES = 2;
 
 async function getTrackingInfo(page, trackingNumber, retryCount = 0) {
@@ -8,11 +8,16 @@ async function getTrackingInfo(page, trackingNumber, retryCount = 0) {
     const url = `https://trackcourier.io/track-and-trace/blue-dart-courier/${trackingNumber}`;
     
     await page.goto(url, {
-      waitUntil: 'networkidle2',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUT
     });
     
-    await new Promise(resolve => setTimeout(resolve, 8000));
+    try {
+      await page.waitForFunction(() => {
+        const allText = document.body && document.body.innerText || '';
+        return allText.includes('Blue Dart Courier') || /Delivered|Out for Delivery|In Transit|Picked Up|Pending/i.test(allText);
+      }, { timeout: 5000 });
+    } catch (e) {}
     
     const result = await page.evaluate(() => {
       const allText = document.body.innerText;

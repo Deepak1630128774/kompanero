@@ -39,6 +39,15 @@
                             <option value="dtdc">DTDC</option>
                             <option value="bluedart">Bluedart</option>
                             <option value="delhivery">Delhivery</option>
+                            <option value="ekart">EKart</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="fulfillmentStatus">Fulfillment Status</label>
+                        <select id="fulfillmentStatus" class="input-field">
+                            <option value="all">All Orders</option>
+                            <option value="fulfilled">Fulfilled</option>
+                            <option value="unfulfilled">Unfulfilled</option>
                         </select>
                     </div>
                     <div class="filter-group">
@@ -49,6 +58,25 @@
 
             <!-- Loading Animation -->
             <div id="loadingAnimation" class="loading-animation hidden">
+                <!-- Progress Section -->
+                <div class="progress-section">
+                    <div class="progress-info">
+                        <h3 id="progressTitle">Processing Orders...</h3>
+                        <p id="progressDetails">Fetching orders from Shopify</p>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="progressBar">
+                            <span class="progress-percentage" id="progressPercentage">0%</span>
+                        </div>
+                    </div>
+                    <div class="progress-stats">
+                        <span id="processedCount">0</span> / <span id="totalCount">0</span> orders processed
+                    </div>
+                    <div class="estimated-time" id="estimatedTime" style="display: none;">
+                        Estimated time remaining: Calculating...
+                    </div>
+                </div>
+                
                 <section class="bag-animation">
                     <div class="satchel-container">
                         <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/196308/shadow.png" alt="shadow">
@@ -98,15 +126,35 @@
                         <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/196308/black-hardware.png" class="satchel-5 satchel-narrow" alt="satchel hardware">
                     </div>
                 </section>
-                <p class="loading-text">Crafting your tracking report...</p>
+                <p class="loading-text" id="loadingText">Crafting your tracking report...</p>
             </div>
 
             <!-- Results Section -->
             <section id="resultsSection" class="results-section hidden">
                 <div class="results-header">
                     <h2>Tracking Results</h2>
-                    <button id="downloadCsvBtn" class="btn-secondary">📥 Download CSV</button>
+                    <div class="results-actions">
+                        <span id="resultsCount" class="results-count">0 orders</span>
+                        <button id="clearFiltersBtn" class="btn-tertiary" style="display: none;">🔄 Clear Filters</button>
+                        <button id="downloadCsvBtn" class="btn-secondary">📥 Download CSV</button>
+                    </div>
                 </div>
+                
+                <!-- Table Filters -->
+                <div class="table-filters">
+                    <div class="filter-row">
+                        <input type="text" id="filterOrderId" class="filter-input" placeholder="🔍 Filter Order ID...">
+                        <input type="text" id="filterCustomer" class="filter-input" placeholder="🔍 Filter Customer...">
+                        <input type="text" id="filterItems" class="filter-input" placeholder="🔍 Filter Items...">
+                        <select id="filterCarrier" class="filter-input">
+                            <option value="">All Carriers</option>
+                        </select>
+                        <select id="filterStatus" class="filter-input">
+                            <option value="">All Statuses</option>
+                        </select>
+                    </div>
+                </div>
+
                 <div class="table-container">
                     <table id="resultsTable" class="results-table">
                         <thead>

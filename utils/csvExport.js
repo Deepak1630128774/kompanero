@@ -31,7 +31,8 @@ function convertToCSV(data) {
     csvRows.push(values.join(','));
   });
 
-  return csvRows.join('\n');
+  // Add UTF-8 BOM for Excel compatibility
+  return '\ufeff' + csvRows.join('\n');
 }
 
 function escapeCSV(value) {

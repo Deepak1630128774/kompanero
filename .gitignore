@@ -28,18 +28,8 @@ Thumbs.db
 # Build files
 dist/
 build/
-out/
-
-# Electron
-*.exe
-*.dmg
-*.AppImage
-*.deb
-*.rpm
+chrome-bundle/
 
 # Temporary files
 *.tmp
 temp/
-
-# Puppeteer cache
-.cache/

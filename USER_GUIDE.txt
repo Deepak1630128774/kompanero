@@ -1,0 +1,197 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                  KOMPANERO TRACKING - USER GUIDE                             ║
+║                         Version 1.0.0                                        ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📦 WHAT IS THIS?
+────────────────────────────────────────────────────────────────────────────────
+Kompanero Tracking is a desktop application that automatically tracks your
+Shopify orders across multiple courier services (DTDC, BlueDart, Delhivery).
+
+No installation required - just run the .exe file!
+
+
+🚀 QUICK START
+────────────────────────────────────────────────────────────────────────────────
+1. Create a file named ".env" in the same folder as the .exe file
+2. Add your Shopify credentials to the .env file (see below)
+3. Double-click "Kompanero Tracking-1.0.0-Portable.exe"
+4. Select date range and click "Process Orders"
+5. Download results as CSV
+
+
+⚙️ SETUP - CREATING .ENV FILE
+────────────────────────────────────────────────────────────────────────────────
+Create a new text file named ".env" (no .txt extension) with these contents:
+
+SHOPIFY_STORE_URL=your-store.myshopify.com
+SHOPIFY_ACCESS_TOKEN=shpat_your_access_token_here
+SHOPIFY_API_VERSION=2024-01
+PORT=3000
+
+Replace:
+  • your-store.myshopify.com → Your actual Shopify store URL
+  • shpat_your_access_token_here → Your Shopify Admin API token
+
+
+📝 HOW TO GET SHOPIFY ACCESS TOKEN
+────────────────────────────────────────────────────────────────────────────────
+1. Go to your Shopify Admin panel
+2. Click Settings → Apps and sales channels
+3. Click "Develop apps"
+4. Click "Create an app"
+5. Name it "Kompanero Tracking"
+6. Click "Configure Admin API scopes"
+7. Enable these permissions:
+   ✓ read_orders
+   ✓ read_fulfillments
+8. Click "Save"
+9. Click "Install app"
+10. Copy the "Admin API access token" (starts with shpat_)
+11. Paste it in your .env file
+
+
+💻 USING THE APPLICATION
+────────────────────────────────────────────────────────────────────────────────
+
+STEP 1: Start the Application
+  • Double-click the .exe file
+  • Wait for the window to open (may take 10-30 seconds first time)
+
+STEP 2: Select Date Range
+  • Choose "From Date" (start of range)
+  • Choose "To Date" (end of range)
+  • Default is last 30 days
+
+STEP 3: Choose Carrier (Optional)
+  • Select "All Carriers" to track all orders
+  • Or select specific carrier: DTDC, Bluedart, or Delhivery
+
+STEP 4: Process Orders
+  • Click "Process Orders" button
+  • Watch the progress bar
+  • Processing time depends on number of orders:
+    - 25 orders: ~10-30 seconds
+    - 100 orders: ~1-3 minutes
+    - 500 orders: ~5-15 minutes
+
+STEP 5: View Results
+  • Results appear in a table below
+  • Shows: Order ID, Date, Customer, Items, Carrier, Tracking #, Status
+
+STEP 6: Download CSV
+  • Click "Download CSV" button
+  • Save the file to your computer
+  • Open in Excel or Google Sheets
+
+
+📊 UNDERSTANDING STATUS COLORS
+────────────────────────────────────────────────────────────────────────────────
+🟢 GREEN   = Delivered (order successfully delivered)
+🟡 YELLOW  = In Transit (order is on the way)
+🔴 RED     = Pending/Error (order not yet picked up or error occurred)
+
+
+⚠️ TROUBLESHOOTING
+────────────────────────────────────────────────────────────────────────────────
+
+PROBLEM: Windows shows "Windows protected your PC" warning
+SOLUTION: Click "More info" → "Run anyway"
+          This is normal for unsigned applications
+
+PROBLEM: Application won't start
+SOLUTION: 
+  • Make sure .env file exists in same folder as .exe
+  • Check that .env has correct Shopify credentials
+  • Try running as Administrator (right-click → Run as administrator)
+
+PROBLEM: "Cannot connect to Shopify" error
+SOLUTION:
+  • Verify Shopify access token is correct
+  • Check internet connection
+  • Make sure token has read_orders and read_fulfillments permissions
+
+PROBLEM: Tracking is very slow
+SOLUTION:
+  • This is normal - each order takes 3-10 seconds to track
+  • Close other applications to free up memory
+  • Process smaller date ranges (e.g., 7 days instead of 30 days)
+
+PROBLEM: Application crashes or freezes
+SOLUTION:
+  • Close and restart the application
+  • Process smaller batches of orders
+  • Make sure you have at least 4GB free RAM
+
+PROBLEM: Some tracking statuses show "Error" or "Status not found"
+SOLUTION:
+  • This is normal - courier websites may be slow or unavailable
+  • Invalid tracking numbers will show errors
+  • Try processing again later
+
+
+💡 TIPS FOR BEST RESULTS
+────────────────────────────────────────────────────────────────────────────────
+✓ Process orders in smaller date ranges (7-14 days at a time)
+✓ Run during off-peak hours for faster courier website response
+✓ Close other applications to free up RAM
+✓ Use stable internet connection (wired is better than WiFi)
+✓ Don't close the application while processing
+✓ Wait for progress bar to reach 100% before downloading CSV
+
+
+📁 FILE STRUCTURE
+────────────────────────────────────────────────────────────────────────────────
+Your folder should look like this:
+
+📁 Kompanero Tracking/
+  ├── Kompanero Tracking-1.0.0-Portable.exe  (the application)
+  └── .env                                    (your configuration)
+
+
+🔒 SECURITY & PRIVACY
+────────────────────────────────────────────────────────────────────────────────
+• Your Shopify credentials are stored locally in .env file
+• No data is sent to external servers (except Shopify and courier websites)
+• All processing happens on your computer
+• Keep your .env file private - it contains sensitive credentials
+• Don't share your Shopify access token with anyone
+
+
+📞 SYSTEM REQUIREMENTS
+────────────────────────────────────────────────────────────────────────────────
+Minimum:
+  • Windows 10 (64-bit) or Windows 11
+  • 4GB RAM
+  • 500MB free disk space
+  • Internet connection
+
+Recommended:
+  • Windows 10/11 (64-bit)
+  • 8GB RAM or more
+  • 1GB free disk space
+  • Stable internet connection
+
+
+📝 NOTES
+────────────────────────────────────────────────────────────────────────────────
+• First run may be slower as it initializes
+• Application uses ~200-500MB RAM while running
+• Tracking accuracy depends on courier website availability
+• Some couriers may have rate limits (slow down if too many requests)
+• CSV export includes all order details and tracking status
+
+
+✅ QUICK REFERENCE
+────────────────────────────────────────────────────────────────────────────────
+1. Create .env file with Shopify credentials
+2. Run Kompanero Tracking-1.0.0-Portable.exe
+3. Select date range
+4. Click "Process Orders"
+5. Wait for completion
+6. Download CSV
+
+
+═══════════════════════════════════════════════════════════════════════════════
+Need help? Check the console output for error messages.
+═══════════════════════════════════════════════════════════════════════════════
