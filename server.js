@@ -226,64 +226,112 @@ app.post('/api/process-orders', async (req, res) => {
     for (let i = 0; i < orders.length; i += CONCURRENT_LIMIT) {
       const batch = orders.slice(i, i + CONCURRENT_LIMIT);
       const batchPromises = batch.map(async (order) => {
-      try {
-        // Get customer name
-        const customerName = order.customer 
-          ? `${order.customer.first_name || ''} ${order.customer.last_name || ''}`.trim()
-          : 'N/A';
+        try {
+          // Get customer name
+          const customerName = order.customer 
+            ? `${order.customer.first_name || ''} ${order.customer.last_name || ''}`.trim()
+            : 'N/A';
 
-        // Get ordered items
-        const orderedItems = order.line_items
-          .map(item => `${item.title} (x${item.quantity})`)
-          .join(', ');
+          // Precompute order-level items string (fallback)
+          const orderItemsString = order.line_items
+            .map(item => `${item.title} (x${item.quantity})`)
+            .join(', ');
 
-        // Check if order has fulfillment data
-        let trackingNumber = 'N/A';
-        let trackingUrl = 'N/A';
-        let carrierName = 'Not Fulfilled';
-        let trackingStatus = 'Unfulfilled';
+          // Build results for each fulfillment (supports multiple tracking numbers)
+          const fulfillmentResults = [];
+          const fulfilledItemIds = new Set();
 
-        if (order.fulfillments && order.fulfillments.length > 0) {
-          const fulfillment = order.fulfillments[0];
-          trackingNumber = fulfillment.tracking_number || 'N/A';
-          trackingUrl = fulfillment.tracking_url || 'N/A';
-          carrierName = fulfillment.tracking_company || 'Unknown';
+          // Group successful fulfillments by courier id (tracking number) so all items for the same tracking come in a single row
+          const fulfillmentGroups = new Map();
+          (order.fulfillments || []).forEach(fulfillment => {
+            if ((fulfillment.status || '').toLowerCase() !== 'success') {
+              return;
+            }
 
-          // Track the order if it has tracking number
-          if (trackingNumber !== 'N/A') {
-            const trackingResult = await trackOrder(carrierName, trackingNumber, trackingUrl);
-            trackingStatus = trackingResult.status || 'Unknown';
-          } else {
-            trackingStatus = 'No Tracking';
+            const trackingNumber = fulfillment.tracking_number || 'N/A';
+            const trackingUrl = fulfillment.tracking_url || 'N/A';
+            const carrierName = fulfillment.tracking_company || 'Unknown';
+            const key = trackingNumber !== 'N/A' ? trackingNumber : `${carrierName}||${trackingUrl}`;
+
+            if (!fulfillmentGroups.has(key)) {
+              fulfillmentGroups.set(key, {
+                trackingNumber,
+                trackingUrl,
+                carrierName,
+                // Map of orderLineId -> { title, quantity }
+                lineItems: new Map()
+              });
+            }
+
+            const group = fulfillmentGroups.get(key);
+            (fulfillment.line_items || []).forEach(fli => {
+              const orderLineId = fli.line_item_id || fli.id;
+              if (!orderLineId) return;
+
+              fulfilledItemIds.add(orderLineId);
+
+              const title = fli.title || 'Unknown Item';
+              const qty = fli.quantity || 0;
+
+              const existing = group.lineItems.get(orderLineId);
+              if (existing) {
+                existing.quantity += qty;
+              } else {
+                group.lineItems.set(orderLineId, { title, quantity: qty });
+              }
+            });
+          });
+
+          // 2️⃣ Handle fulfilled parts (one row per courier id)
+          for (const group of fulfillmentGroups.values()) {
+            let trackingStatus = 'Unfulfilled';
+            if (group.trackingNumber !== 'N/A') {
+              const trackingResult = await trackOrder(group.carrierName, group.trackingNumber, group.trackingUrl);
+              trackingStatus = trackingResult.status || 'Unknown';
+            }
+
+            const orderedItemsString = Array.from(group.lineItems.values())
+              .map(li => `${li.title} (x${li.quantity})`)
+              .join(', ');
+
+            fulfillmentResults.push({
+              orderId: order.name,
+              orderDate: new Date(order.created_at).toLocaleDateString(),
+              customerName,
+              orderedItems: orderedItemsString || orderItemsString,
+              carrier: group.carrierName,
+              trackingNumber: group.trackingNumber,
+              trackingUrl: group.trackingUrl,
+              trackingStatus
+            });
           }
-        }
 
-        // Filter by carrier if specified (only for fulfilled orders)
-        if (carrier && carrier !== 'all') {
-          if (carrierName === 'Not Fulfilled' || carrierName.toLowerCase() !== carrier.toLowerCase()) {
-            return null;
+          // 3️⃣ Handle pending (unfulfilled) line items based on Shopify's fulfillable_quantity
+          const pendingItems = (order.line_items || []).filter(li => (li.fulfillable_quantity || 0) > 0);
+
+          if (pendingItems.length > 0) {
+            fulfillmentResults.push({
+              orderId: order.name,
+              orderDate: new Date(order.created_at).toLocaleDateString(),
+              customerName,
+              orderedItems: pendingItems.map(li => `${li.title} (x${li.quantity})`).join(', '),
+              carrier: 'Not Fulfilled',
+              trackingNumber: 'N/A',
+              trackingUrl: 'N/A',
+              trackingStatus: 'Unfulfilled'
+            });
           }
-        }
 
-        return {
-          orderId: order.name || order.id,
-          orderDate: order.created_at ? new Date(order.created_at).toLocaleDateString() : '',
-          customerName,
-          orderedItems,
-          carrier: carrierName,
-          trackingNumber: trackingNumber,
-          trackingUrl: trackingUrl,
-          trackingStatus
-        };
-      } catch (error) {
-        console.error(`Error processing order ${order.name}:`, error.message);
-        return null;
-      }
-    });
+          return fulfillmentResults;
+        } catch (error) {
+          console.error(`Error processing order ${order.name}:`, error.message);
+          return null;
+        }
+      });
 
       // Wait for current batch to complete
       const batchResults = await Promise.all(batchPromises);
-      results.push(...batchResults.filter(result => result !== null));
+      results.push(...batchResults.flat().filter(result => result !== null));
       
       processedCount = Math.min(i + CONCURRENT_LIMIT, orders.length);
       const percentage = Math.floor((processedCount / orders.length) * 100);

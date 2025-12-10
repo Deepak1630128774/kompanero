@@ -142,7 +142,7 @@ async function getStatus(page, trackingNumber, retryCount = 0) {
     
   } catch (error) {
     if (retryCount < MAX_RETRIES) {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 1500));
       return getStatus(page, trackingNumber, retryCount + 1);
     }
     
