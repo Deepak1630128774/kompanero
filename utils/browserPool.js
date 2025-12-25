@@ -1,4 +1,5 @@
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
+const chromium = require('@sparticuz/chromium');
 const path = require('path');
 const fs = require('fs');
 
@@ -69,18 +70,19 @@ class BrowserPool {
 
     try {
       const launchOptions = {
-        headless: 'new',
-        args: [
+        args: chromium.args || [
           '--no-sandbox',
           '--disable-setuid-sandbox',
           '--disable-dev-shm-usage',
           '--disable-accelerated-2d-canvas',
           '--disable-gpu'
-        ]
+        ],
+        defaultViewport: chromium.defaultViewport || null,
+        headless: chromium.headless !== undefined ? chromium.headless : 'new'
       };
 
-      // Add executable path for production
-      const chromePath = this.getChromePath();
+      // Choose executable path
+      const chromePath = process.env.VERCEL ? await chromium.executablePath : this.getChromePath();
       if (chromePath) {
         launchOptions.executablePath = chromePath;
       }
