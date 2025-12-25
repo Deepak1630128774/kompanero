@@ -444,17 +444,12 @@ app.post('/api/export-csv', (req, res) => {
   }
 });
 
-// Start server locally (skip when running on Vercel)
-if (!process.env.VERCEL) {
-  app.listen(PORT, () => {
-    console.log(`\n${'='.repeat(60)}`);
-    console.log(`👜 Kompanero Tracking Dashboard`);
-    console.log(`${'='.repeat(60)}`);
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
-    console.log(`📊 Ready to track orders!`);
-    console.log(`${'='.repeat(60)}\n`);
-  });
-}
-
-// Export the Express app for serverless environments (e.g., Vercel)
-module.exports = app;
+// Start server
+app.listen(PORT, () => {
+  console.log(`\n${'='.repeat(60)}`);
+  console.log(`👜 Kompanero Tracking Dashboard`);
+  console.log(`${'='.repeat(60)}`);
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`📊 Ready to track orders!`);
+  console.log(`${'='.repeat(60)}\n`);
+});
