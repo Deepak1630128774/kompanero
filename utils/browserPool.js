@@ -1,4 +1,5 @@
-const puppeteer = require('puppeteer');
+// Use puppeteer-core to avoid dependency on bundled Chromium
+const puppeteer = require('puppeteer-core');
 const path = require('path');
 const fs = require('fs');
 
