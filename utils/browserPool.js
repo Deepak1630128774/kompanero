@@ -1,5 +1,4 @@
-const puppeteer = require('puppeteer-core');
-const chromium = require('@sparticuz/chromium');
+const puppeteer = require('puppeteer');
 const path = require('path');
 const fs = require('fs');
 
@@ -18,6 +17,12 @@ class BrowserPool {
     if (this.chromePathCached !== undefined) {
       return this.chromePathCached;
     }
+    // Environment override
+    if (process.env.PUPPETEER_EXECUTABLE_PATH || process.env.CHROME_PATH) {
+      this.chromePathCached = process.env.PUPPETEER_EXECUTABLE_PATH || process.env.CHROME_PATH;
+      return this.chromePathCached;
+    }
+
     // For packaged app (production)
     if (process.env.NODE_ENV === 'production' || process.resourcesPath) {
       const appPath = process.resourcesPath || path.join(__dirname, '..');
@@ -36,8 +41,14 @@ class BrowserPool {
         path.join(process.env.USERPROFILE || '', '.cache', 'puppeteer', 'chrome', 'win64-142.0.7444.59', 'chrome-win64', 'chrome.exe'),
         path.join(process.env.LOCALAPPDATA || '', 'puppeteer', 'chrome', 'win64-142.0.7444.59', 'chrome-win64', 'chrome.exe'),
         // User's local Chrome installation
+        // --- Windows common installs ---
         'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
         'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+        // --- Linux common installs (Render, Docker, etc.) ---
+        '/usr/bin/google-chrome-stable',
+        '/usr/bin/google-chrome',
+        '/usr/bin/chromium-browser',
+        '/usr/bin/chromium',
         path.join(process.env.LOCALAPPDATA || '', 'Google', 'Chrome', 'Application', 'chrome.exe'),
       ];
 
@@ -70,19 +81,18 @@ class BrowserPool {
 
     try {
       const launchOptions = {
-        args: chromium.args || [
+        headless: 'new',
+        args: [
           '--no-sandbox',
           '--disable-setuid-sandbox',
           '--disable-dev-shm-usage',
           '--disable-accelerated-2d-canvas',
           '--disable-gpu'
-        ],
-        defaultViewport: chromium.defaultViewport || null,
-        headless: chromium.headless !== undefined ? chromium.headless : 'new'
+        ]
       };
 
-      // Choose executable path
-      const chromePath = process.env.VERCEL ? await chromium.executablePath() : this.getChromePath();
+      // Add executable path for production
+      const chromePath = this.getChromePath();
       if (chromePath) {
         launchOptions.executablePath = chromePath;
       }

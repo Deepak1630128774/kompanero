@@ -17,11 +17,17 @@ function getTransporter() {
     return null;
   }
 
+  const timeoutMs = parseInt(process.env.SMTP_TIMEOUT || '20000', 10);
+
   cachedTransporter = nodemailer.createTransport({
     host,
     port,
     secure: port === 465,
-    auth: { user, pass }
+    connectionTimeout: timeoutMs,
+    socketTimeout: timeoutMs,
+    greetingTimeout: timeoutMs,
+    auth: { user, pass },
+    tls: { rejectUnauthorized: false }
   });
 
   return cachedTransporter;
