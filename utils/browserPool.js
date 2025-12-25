@@ -82,7 +82,7 @@ class BrowserPool {
       };
 
       // Choose executable path
-      const chromePath = process.env.VERCEL ? chromium.executablePath : this.getChromePath();
+      const chromePath = process.env.VERCEL ? (typeof chromium.executablePath === 'string' ? chromium.executablePath : await chromium.executablePath()) : this.getChromePath();
       if (chromePath) {
         launchOptions.executablePath = chromePath;
       }
